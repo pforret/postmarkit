@@ -9,6 +9,7 @@
 # postmark
 
 Use Postmark API on the command line
+![pforret/postmark](postmark.jpg)
 
 ## Usage
 ```

@@ -1,0 +1,18 @@
+<heml>
+    <head>
+        <subject>{{subject}}</subject>
+        <preview>{{preview}}</preview>
+    </head>
+    <body>
+    <container>
+        <row>
+            <column>
+                <h1>{{subject}}</h1>
+                <p>
+                    {{body}}
+                </p>
+            </column>
+        </row>
+    </container>
+    </body>
+</heml>

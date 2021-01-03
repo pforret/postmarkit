@@ -1,13 +1,4 @@
 #!/usr/bin/env bash
-
-### ==============================================================================
-### SO HOW DO YOU PROCEED WITH YOUR SCRIPT?
-### 1. define the options/parameters and defaults you need in list_options()
-### 2. define dependencies on other programs/scripts in list_dependencies()
-### 3. implement the different actions in main() with helper functions
-### 4. implement helper functions you defined in previous step
-### ==============================================================================
-
 ### Created by Peter Forret ( pforret ) on 2021-01-03
 script_version="0.0.1" # if there is a VERSION.md in this script's folder, it will take priority for version number
 readonly script_author="peter@forret.com"
@@ -15,18 +6,6 @@ readonly script_created="2021-01-03"
 readonly run_as_root=-1 # run_as_root: 0 = don't check anything / 1 = script MUST run as root / -1 = script MAY NOT run as root
 
 list_options() {
-  ### Change the next lines to reflect which flags/options/parameters you need
-  ### flag:   switch a flag 'on' / no extra parameter
-  ###     flag|<short>|<long>|<description>
-  ###     e.g. "-v" or "--verbose" for verbose output / default is always 'off'
-  ### option: set an option value / 1 extra parameter
-  ###     option|<short>|<long>|<description>|<default>
-  ###     e.g. "-e <extension>" or "--extension <extension>" for a file extension
-  ### param:  comes after the options
-  ###     param|<type>|<long>|<description>
-  ###     <type> = 1 for single parameters - e.g. param|1|output expects 1 parameter <output>
-  ###     <type> = ? for optional parameters - e.g. param|1|output expects 1 parameter <output>
-  ###     <type> = n for list parameter    - e.g. param|n|inputs expects <input1> <input2> ... <input99>
   echo -n "
 #commented lines will be filtered
 flag|h|help|show usage
@@ -35,10 +14,16 @@ flag|v|verbose|output more
 flag|f|force|do not ask for confirmation (always yes)
 option|l|log_dir|folder for log files |$HOME/log/$script_prefix
 option|t|tmp_dir|folder for temp files|.tmp
-option|w|width|width to use|800
-param|1|action|action to perform: analyze/convert
-param|?|input|input file
-param|?|output|output file
+option|F|from|from: address|$script_author
+option|T|to|to: address|example@example.com
+option|C|cc|cc: address|
+option|B|bcc|bcc: address|
+option|G|tag|email tag|test
+option|S|subject|email subject|Mail from $USER@$HOSTNAME - $execution_day
+option|K|token|Postmark API server token|POSTMARK_API_TEST
+option|M|stream|Postmark stream|outbound
+param|1|action|action to perform: check/html/text
+param|?|input|input text or html
 " |
     grep -v '^#' |
     sort
@@ -54,6 +39,10 @@ list_dependencies() {
   #progressbar|basher install pforret/progressbar
   echo -n "
 awk
+curl
+jq
+heml|npm install heml -g
+pandoc
 " |
     grep -v "^#" |
     sort
@@ -71,38 +60,85 @@ main() {
 
   require_binaries
   log_to_file "[$script_basename] $script_version started"
-  time_started=$(date '+%s')
 
   action=$(lower_case "$action")
   case $action in
   check)
     #TIP: use «$script_prefix check» to check if this script is ready to execute (all necessary binaries/scripts exist)
     #TIP:> $script_prefix check
-    echo -n "$char_succ Dependencies: "
+    echo -n "## $char_succ Dependencies: "
     list_dependencies | cut -d'|' -f1 | sort | xargs
+    echo "## $char_succ Use this for your .env"
+    number_pattern='^[0-9\.]+$'
+    list_options \
+    | grep -v 'param|' \
+    | cut -d'|' -f3 \
+    | while read -r option; do
+        [[ -n "$option" ]] || continue
+        echo -n "$option="
+        value="$(eval "echo \$$option")"
+        if [[ $value =~ $number_pattern ]] ; then
+          echo "$value"
+        else
+          echo "\"$value\""
+        fi
+    done
     ;;
 
-  analyze)
-    #TIP: use «$script_prefix analyze» to analyze an input file
-    #TIP:> $script_prefix analyze input.txt
+  md|markdown)
+    #TIP: use «$script_prefix md» send a Markdown formatted email
+    #TIP:> $script_prefix md input.md
     # shellcheck disable=SC2154
-    do_analyze "$input"
+    if [[ -n "$input" ]] ; then
+      md_file="$input"
+    else
+      md_file="$tmp_dir/$execution_day.$$.body.md"
+      cat > "$md_file"
+    fi
+    debug "Input: [$md_file]"
+    text_file="$md_file"
+    html_file="$tmp_dir/$execution_day.$$.body.html"
+    convert_md_html "$md_file" "$html_file"
+    do_send_email "$html_file" "$text_file"
     ;;
 
-  convert)
-    #TIP: use «$script_prefix convert» to convert input into output
-    #TIP:> $script_prefix convert input.txt output.pdf
+  html)
+    #TIP: use «$script_prefix html» send a HTML formatted email
+    #TIP:> $script_prefix html input.html
     # shellcheck disable=SC2154
-    do_convert "$input" "$output"
+    if [[ -n "$input" ]] ; then
+      html_file="$input"
+    else
+      html_file="$tmp_dir/$execution_day.$$.body.html"
+      cat > "$html_file"
+    fi
+    debug "Input: [$html_file]"
+    text_file="$tmp_dir/$execution_day.$$.body.txt"
+    convert_html_text "$html_file" "$text_file"
+    do_send_email "$html_file" "$text_file"
+    ;;
+
+  text)
+    #TIP: use «$script_prefix text» send a text formatted email
+    #TIP:> $script_prefix text input.txt
+    # shellcheck disable=SC2154
+    if [[ -n "$input" ]] ; then
+      text_file="$input"
+    else
+      text_file="$tmp_dir/$execution_day.$$.body.txt"
+      cat > "$text_file"
+    fi
+    debug "Input: [$text_file]"
+    html_file="$tmp_dir/$execution_day.$$.body.html"
+    convert_text_html "$text_file" "$html_file"
+    do_send_email "$html_file" "$text_file"
     ;;
 
   *)
     die "action [$action] not recognized"
     ;;
   esac
-  time_ended=$(date '+%s')
-  time_elapsed=$((time_ended - time_started))
-  log_to_file "[$script_basename] ended after $time_elapsed secs"
+  log_to_file "[$script_basename] ended after $SECONDS secs"
   #TIP: >>> bash script created with «pforret/bashew»
   #TIP: >>> for developers, also check «pforret/setver»
 }
@@ -111,14 +147,84 @@ main() {
 ## Put your helper scripts here
 #####################################################################
 
-do_analyze() {
-  log_to_file "Analyze [$input]"
-  # < "$1"  do_analysis_stuff
+do_send_email() {
+  # $1 = html body file
+  # $2 = text body file
+
+  # shellcheck disable=SC2154
+  debug "Send mail: [$from] -> [$to] ($subject)"
+  # shellcheck disable=SC2154
+  debug "API: stream $stream, Token $token"
+
+  json_request="$tmp_dir/$execution_day.$$.request.json"
+  json_response="$tmp_dir/$execution_day.$$.response.json"
+
+  jq \
+    --arg From "$from" \
+    --arg To "$to" \
+    --arg Subject "$subject" \
+    --arg TextBody "$(< "$2")" \
+    --arg HtmlBody "$(< "$1")" \
+    --arg MessageStream "$stream" \
+    '.
+    | .From=$From
+    | .To=$To
+    | .Subject=$Subject
+    | .TextBody=$TextBody
+    | .HtmlBody=$HtmlBody
+    | .MessageStream=$MessageStream
+    ' \
+    <<<'{}' > "$json_request"
+    debug "JSON request: $json_request"
+
+  curl -s "https://api.postmarkapp.com/email" \
+    -X POST \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json" \
+    -H "X-Postmark-Server-Token: $token" \
+    -d @"$json_request" \
+    > "$json_response"
+    ((quiet)) || < "$json_response" jq "."
+
 }
 
-do_convert() {
-  log_to_file "Convert [$input] -> [$output]"
-  # < "$1"  do_conversion_stuff > "$2"
+convert_text_html() {
+  # $1 = input file
+  # $2 = output file
+  temp_heml="$tmp_dir/$execution_day.$$.convert.heml"
+  temp_html="$tmp_dir/$execution_day.$$.convert.html"
+  # shellcheck disable=SC2154
+  awk \
+  -v subject="$subject" \
+  -v preview="$(< "$1" tr "\n" " " | cut -d' ' -f1-50)" \
+  -v body="$(cat "$1")" \
+  '
+  {
+  gsub(/{{subject}}/, subject);
+  gsub(/{{body}}/, body);
+  gsub(/{{preview}}/, preview);
+  print;
+  }
+  ' \
+  < "$script_install_folder/template/email.heml" \
+  > "$temp_heml"
+
+  heml build "$temp_heml" && cp "$temp_html" "$2"
+  debug "convert_text_html -> $2"
+ }
+
+convert_md_html() {
+  # $1 = input file
+  # $2 = output file
+  pandoc --metadata title="$subject" -s "$1" -o "$2"
+  debug "convert_md_html -> $2"
+}
+
+convert_html_text() {
+  # $1 = input file
+  # $2 = output file
+  pandoc -s "$1" -o "$2"
+  debug "convert_html_text -> $2"
 }
 
 #####################################################################
@@ -653,7 +759,7 @@ import_env_if_any() {
   done
 }
 
-[[ $run_as_root == 1 ]]  && [[ $UID -ne 0 ]] && die "user is $USER, MUST be root to run [$script_basename]"
+[[ $run_as_root == 1 ]] && [[ $UID -ne 0 ]] && die "user is $USER, MUST be root to run [$script_basename]"
 [[ $run_as_root == -1 ]] && [[ $UID -eq 0 ]] && die "user is $USER, CANNOT be root to run [$script_basename]"
 
 initialise_output  # output settings

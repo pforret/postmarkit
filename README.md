@@ -23,15 +23,15 @@ Flags, options and parameters:
 -v|--verbose     : [flag] output more [default: off]
 -B|--bcc <?>     : [option] bcc: address
 -C|--cc <?>      : [option] cc: address
--F|--from <?>    : [option] from: address  [default: peter@forret.com]
+-F|--from <?>    : [option] from: address  [default: <author email>]
 -G|--tag <?>     : [option] email tag  [default: test]
 -K|--token <?>   : [option] Postmark API server token  [default: POSTMARK_API_TEST]
 -M|--stream <?>  : [option] Postmark stream  [default: outbound]
--S|--subject <?> : [option] email subject  [default: Mail from pforret@Peters-Mac-mini.forret - 2021-01-03]
+-S|--subject <?> : [option] email subject  [default: Mail from <user>@<host> - <date>]
 -T|--to <?>      : [option] to: address  [default: example@example.com]
--l|--log_dir <?> : [option] folder for log files   [default: /Users/pforret/log/postmark]
+-l|--log_dir <?> : [option] folder for log files   [default: ~/log/postmark]
 -t|--tmp_dir <?> : [option] folder for temp files  [default: .tmp]
-<action>         : [parameter] action to perform: check/html/text
+<action>         : [parameter] action to perform: check/html/text/md
 <input>          : [parameter] input text or html (optional)
 ```
 

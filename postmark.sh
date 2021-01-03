@@ -368,7 +368,7 @@ safe_exit() {
   [[ -n "${tmp_file:-}" ]] && [[ -f "$tmp_file" ]] && rm "$tmp_file"
   trap - INT TERM EXIT
   debug "$script_basename finished after $SECONDS seconds"
-  exit
+  exit 0
 }
 
 is_set() { [[ "$1" -gt 0 ]]; }

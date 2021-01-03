@@ -24,22 +24,3 @@ jobs:
 
     - name: Unit testing with bash_unit
       run: tests/bash_unit tests/test_*
-
-  macos:
-    runs-on: macos-latest
-    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: install MacOS dependencies with brew install
-      run: brew install gawk curl jq npm pandoc
-
-    - name: install NPM packages
-      run: npm install heml -g
-
-    - name: Check for basic execution
-      run: ./postmark check
-
-    - name: Unit testing with bash_unit
-      run: tests/bash_unit tests/test_*

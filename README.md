@@ -10,20 +10,45 @@
 
 Use Postmark API on the command line
 
+## Usage
+```
+Program: postmark.sh 1.0.0 by peter@forret.com
+Updated: Jan  3 17:14:14 2021
+Description: Use Postmark API on the command line
+Usage: postmark.sh [-f] [-h] [-q] [-v] [-B <bcc>] [-C <cc>] [-F <from>] [-G <tag>] [-K <token>] [-M <stream>] [-S <subject>] [-T <to>] [-l <log_dir>] [-t <tmp_dir>] <action> <input?>
+Flags, options and parameters:
+-f|--force       : [flag] do not ask for confirmation (always yes) [default: off]
+-h|--help        : [flag] show usage [default: off]
+-q|--quiet       : [flag] no output [default: off]
+-v|--verbose     : [flag] output more [default: off]
+-B|--bcc <?>     : [option] bcc: address
+-C|--cc <?>      : [option] cc: address
+-F|--from <?>    : [option] from: address  [default: peter@forret.com]
+-G|--tag <?>     : [option] email tag  [default: test]
+-K|--token <?>   : [option] Postmark API server token  [default: POSTMARK_API_TEST]
+-M|--stream <?>  : [option] Postmark stream  [default: outbound]
+-S|--subject <?> : [option] email subject  [default: Mail from pforret@Peters-Mac-mini.forret - 2021-01-03]
+-T|--to <?>      : [option] to: address  [default: example@example.com]
+-l|--log_dir <?> : [option] folder for log files   [default: /Users/pforret/log/postmark]
+-t|--tmp_dir <?> : [option] folder for temp files  [default: .tmp]
+<action>         : [parameter] action to perform: check/html/text
+<input>          : [parameter] input text or html (optional)
+```
+
 ## Installation
 
 with [basher](https://github.com/basherpm/basher)
 
-	$ basher install pforret/postmark
+```bash
+basher install pforret/postmark
+```
 
 or with `git`
 
-	$ git clone https://github.com/pforret/postmark.git
-	$ cd postmark
-
-## Usage
-
-	> postmark.sh [action]
+```bash
+git clone https://github.com/pforret/postmark.git
+cd postmark
+```
 
 ## Acknowledgements
 

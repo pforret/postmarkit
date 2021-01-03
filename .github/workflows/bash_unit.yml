@@ -14,10 +14,13 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: install Ubuntu dependencies with sudo apt install -y
-      run: sudo apt install -y gawk
+      run: sudo apt install -y gawk curl jq npm pandoc
+
+    - name: install NPM packages
+      run: sudo npm install heml -g
 
     - name: Check for basic execution
-      run: ls ./*.sh | xargs bash
+      run: postmark check
 
     - name: Unit testing with bash_unit
       run: tests/bash_unit tests/test_*
@@ -30,10 +33,13 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: install MacOS dependencies with brew install
-      run: brew install gawk
+      run: brew install gawk curl jq npm pandoc
+
+    - name: install NPM packages
+      run: npm install heml -g
 
     - name: Check for basic execution
-      run: ls ./*.sh | xargs bash
+      run: postmark check
 
     - name: Unit testing with bash_unit
       run: tests/bash_unit tests/test_*

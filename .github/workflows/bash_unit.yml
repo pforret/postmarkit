@@ -20,7 +20,7 @@ jobs:
       run: sudo npm install heml -g
 
     - name: Check for basic execution
-      run: postmark check
+      run: ./postmark check
 
     - name: Unit testing with bash_unit
       run: tests/bash_unit tests/test_*
@@ -39,7 +39,7 @@ jobs:
       run: npm install heml -g
 
     - name: Check for basic execution
-      run: postmark check
+      run: ./postmark check
 
     - name: Unit testing with bash_unit
       run: tests/bash_unit tests/test_*

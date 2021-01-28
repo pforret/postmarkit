@@ -22,6 +22,7 @@ option|G|tag|email tag|test
 option|S|subject|email subject|Mail from $USER@$HOSTNAME - $execution_day
 option|K|token|Postmark API server token|POSTMARK_API_TEST
 option|M|stream|Postmark stream|outbound
+option|P|post_url|URL where incoming email should be posted|http://localhost/laravel-mailbox/postmark
 param|1|action|action to perform: check/html/text
 param|?|input|input text or html
 " |
@@ -119,7 +120,7 @@ main() {
     ;;
 
   text)
-    #TIP: use «$script_prefix text» send a text formatted email
+    #TIP: use «$script_prefix text» to send a text formatted email
     #TIP:> $script_prefix text input.txt
     # shellcheck disable=SC2154
     if [[ -n "$input" ]] ; then
@@ -134,6 +135,23 @@ main() {
     do_send_email "$html_file" "$text_file"
     ;;
 
+  post)
+    #TIP: use «$script_prefix post» to post a Postmark inbound-like email to an endpoint
+    #TIP:> $script_prefix post input.txt
+    # shellcheck disable=SC2154
+    if [[ -n "$input" ]] ; then
+      text_file="$input"
+    else
+      text_file="$tmp_dir/$execution_day.$$.body.txt"
+      cat > "$text_file"
+    fi
+    debug "Input: [$text_file]"
+    html_file="$tmp_dir/$execution_day.$$.body.html"
+    convert_text_html "$text_file" "$html_file"
+    # shellcheck disable=SC2154
+    do_post_email "$html_file" "$text_file" "$post_url"
+
+    ;;
   *)
     die "action [$action] not recognized"
     ;;
@@ -185,6 +203,21 @@ do_send_email() {
     -d @"$json_request" \
     > "$json_response"
     ((quiet)) || < "$json_response" jq "."
+
+}
+
+do_post_email(){
+  # $1 = html body file
+  # $2 = text body file
+  # $3 = post URL
+
+  # shellcheck disable=SC2154
+  debug "Post mail: [$from] -> [$to] ($subject)"
+  # shellcheck disable=SC2154
+  debug "API: stream $stream, Token $token"
+
+  json_request="$tmp_dir/$execution_day.$$.request.json"
+  json_response="$tmp_dir/$execution_day.$$.response.json"
 
 }
 

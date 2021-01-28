@@ -1,0 +1,107 @@
+{
+  "FromName": "{from_name}",
+  "MessageStream": "inbound",
+  "From": "{from_email}",
+  "FromFull": {
+    "Email": "{from_email}",
+    "Name": "{from_name}",
+    "MailboxHash": ""
+  },
+  "To": "{to_email}",
+  "ToFull": [
+    {
+      "Email": "{to_email}",
+      "Name": "{to_name}",
+      "MailboxHash": ""
+    }
+  ],
+  "Cc": "{cc_email}",
+  "CcFull": [],
+  "Bcc": "{bcc_emails}",
+  "BccFull": [],
+  "OriginalRecipient": "{to_email}",
+  "Subject": "{subject}",
+  "MessageID": "{message_id}",
+  "ReplyTo": "{reply_to}",
+  "MailboxHash": "",
+  "Date": "{message_date}",
+  "TextBody": "{body_text}",
+  "HtmlBody": "{body_html}",
+  "StrippedTextReply": "",
+  "Tag": "",
+  "Headers": [
+    {
+      "Name": "Return-Path",
+      "Value": "<pm_bounces@pm-bounces.fwdvibe.com>"
+    },
+    {
+      "Name": "Received",
+      "Value": "by p-pm-inbound01c-aws-useast1c.inbound.postmarkapp.com (Postfix, from userid 996) id 66FDD4051CE; {message_date}"
+    },
+    {
+      "Name": "X-Spam-Checker-Version",
+      "Value": "SpamAssassin 3.4.0 (2014-02-07) onp-pm-inbound01c-aws-useast1c"
+    },
+    {
+      "Name": "X-Spam-Status",
+      "Value": "No"
+    },
+    {
+      "Name": "X-Spam-Score",
+      "Value": "0.5"
+    },
+    {
+      "Name": "X-Spam-Tests",
+      "Value": "DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HTML_MESSAGE,MIME_HTML_MOSTLY,MPART_ALT_DIFF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS"
+    },
+    {
+      "Name": "Received-SPF",
+      "Value": "pass (pm-bounces.fwdvibe.com: Sender is authorized to use 'pm_bounces@pm-bounces.fwdvibe.com' in 'mfrom' identity (mechanism 'include:spf.mtasv.net' matched)) receiver=p-pm-inbound01c-aws-useast1c; identity=mailfrom; envelope-from=\"pm_bounces@pm-bounces.fwdvibe.com\"; helo=mta196a-ord.mtasv.net; client-ip=104.245.209.196"
+    },
+    {
+      "Name": "Received",
+      "Value": "from mta196a-ord.mtasv.net (mta196a-ord.mtasv.net [104.245.209.196]) (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256\/256 bits)) (No client certificate requested) by p-pm-inbound01c-aws-useast1c.inbound.postmarkapp.com (Postfix) with ESMTPS id BB855404E39 for <test@staging.fwdvi.be>; Thu, 14 Jan 2021 21:30:46 +0000 (UTC)"
+    },
+    {
+      "Name": "DKIM-Signature",
+      "Value": "v=1; a=rsa-sha1; c=relaxed\/relaxed; s=20201115202846pm; d=fwdvibe.com; h=From:Date:Subject:Message-Id:To:MIME-Version:Content-Type; i=peter@fwdvibe.com; bh=CykmTJM5wQ3yvUc4UB8RUeeYmgM=; b=tFC0s3f\/7y29pXMkU\/zoOm1RIGBsYbrbyJkLGbXzIfVqjJj0D0zHfCUxjMkY0Z2q6mExjLvDTCwc   Ld3IXLoNcBMDigSD8K6iRRPyq8FAq8iY6THeUe1HaqpS2KCCP\/fJ0qyz2o5naGg8vlEVOOHwH7HR   MA2+xrNw8ynnnsqFuv0="
+    },
+    {
+      "Name": "DKIM-Signature",
+      "Value": "v=1; a=rsa-sha1; c=relaxed\/relaxed; s=pm; d=pm.mtasv.net; h=From:Date:Subject:Message-Id:To:MIME-Version:Content-Type; bh=CykmTJM5wQ3yvUc4UB8RUeeYmgM=; b=xIY5ZchRUxeU9VZ6fjkFy9d6Unz1doGZ7o8ZNjs75z+MUIbkLoxRqYJzyEyBentJAk6xflHF5Kxe   0cnMWstYS6b7Rq7VWzO2eTNRTuTX5Wh35\/aZe\/rnYX7fe3OVkrv7xpm1e5xZArtYTS0wrvGbVCUr   nIAQxGMQsRQlsBP41mk="
+    },
+    {
+      "Name": "Received",
+      "Value": "by mta196a-ord.mtasv.net id h02s0c1jk5kk for <test@staging.fwdvi.be>; {message_date} (envelope-from <pm_bounces@pm-bounces.fwdvibe.com>)"
+    },
+    {
+      "Name": "X-PM-IP",
+      "Value": "104.245.209.196"
+    },
+    {
+      "Name": "X-IADB-IP",
+      "Value": "104.245.209.196"
+    },
+    {
+      "Name": "X-IADB-IP-REVERSE",
+      "Value": "196.209.245.104"
+    },
+    {
+      "Name": "DKIM-Signature",
+      "Value": "v=1; a=rsa-sha256; d=fwdvibe.com; s=20201115202846pm;c=relaxed\/relaxed; i=peter@fwdvibe.com; t=1610659846;h=cc:content-description:content-id:content-transfer-encoding:content-type:date:from:in-reply-to:list-archive:list-help:list-id:list-owner:list-post:list-subscribe:list-unsubscribe:mime-version:message-id:references:reply-to:resent-cc:resent-date:resent-from:resent-message-id:resent-sender:resent-to:sender:subject:to:feedback-id;bh=p47I1kAMGREdgLNWKZyjDRRyi5UlNtkYlW9AjqO7o4I=;b=OP0k35Iyaehl+VG4c+yPNBugKvuKVvbsKN0Pn9ZP90aFMyktDJuu4EgrD\/KyU9ghI\/iiwHLYYeLA9pWWRtzRDhmvBdO+qCYEMQXGHj7hsxcUyyhlW\/sMU+w3of\/0t8k72h0+RTGBkbrgY4\/EGuzWb0YSuwm9bWeN0eja3I5ienk="
+    },
+    {
+      "Name": "Message-Id",
+      "Value": "<{message_id}@mtasv.net>"
+    },
+    {
+      "Name": "Feedback-ID",
+      "Value": "s5673197-_:s5673197:a198900:postmark"
+    },
+    {
+      "Name": "MIME-Version",
+      "Value": "1.0"
+    }
+  ],
+  "Attachments": []
+}
